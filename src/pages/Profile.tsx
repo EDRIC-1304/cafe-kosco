@@ -41,7 +41,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen py-24 px-8">
+    <div className="min-h-screen py-24 px-8 bg-[#0B0F1A]">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sidebar */}
@@ -56,8 +56,8 @@ export default function Profile() {
                   </div>
                 )}
               </div>
-              <h2 className="text-2xl font-black text-on-background tracking-tighter mb-1">{user.displayName || "Commander"}</h2>
-              <p className="text-sm text-on-surface-variant font-mono mb-6">{user.email}</p>
+              <h2 className="text-2xl font-black text-on-background tracking-tighter mb-1">Callsign: {user.displayName || "Commander"}</h2>
+              <p className="text-sm text-on-surface-variant font-mono mb-6">Frequency: {user.email}</p>
               
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-black uppercase tracking-widest">
                 <Shield className="w-3 h-3" />
@@ -71,7 +71,7 @@ export default function Profile() {
                 { icon: History, label: "Order History" },
                 { icon: Star, label: "Loyalty Rewards" },
                 { icon: Settings, label: "System Config" },
-                { icon: LogOut, label: "Terminate Session", danger: true, onClick: handleLogout },
+                { icon: LogOut, label: "De-orbit (Logout)", danger: true, onClick: handleLogout },
               ].map((item, i) => (
                 <button
                   key={i}

@@ -10,7 +10,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const genAI = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY || "" });
 
 async function startServer() {
   const app = express();
@@ -26,8 +26,8 @@ async function startServer() {
   app.post("/api/chat", async (req, res) => {
     const { message } = req.body;
     
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "GEMINI_API_KEY is not configured." });
+    if (!process.env.VITE_GEMINI_API_KEY) {
+      return res.status(500).json({ error: "VITE_GEMINI_API_KEY is not configured." });
     }
 
     try {

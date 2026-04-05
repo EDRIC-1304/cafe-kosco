@@ -1,14 +1,19 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Rocket, Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { useAuth } from "../lib/AuthProvider";
 import { signInWithGoogle } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login, register } = useAuth();
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -17,6 +22,23 @@ export default function Auth() {
       navigate("/profile");
     } catch (error) {
       console.error("Auth Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isLogin) {
+        await login(email, password);
+      } else {
+        await register(email, password, name);
+      }
+      navigate('/profile');
+    } catch (error) {
+      console.error("Auth Exception:", error);
     } finally {
       setLoading(false);
     }
@@ -60,7 +82,7 @@ export default function Auth() {
         </div>
 
         {/* Right Side: Form */}
-        <div className="p-10 md:p-16 flex flex-col justify-center">
+        <div className="p-10 md:p-16 flex flex-col justify-center relative z-10">
           <div className="mb-10">
             <h3 className="text-3xl font-black text-on-background tracking-tighter mb-2">
               {isLogin ? "WELCOME BACK" : "START MISSION"}
@@ -87,7 +109,7 @@ export default function Auth() {
             </div>
           </div>
 
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {!isLogin && (
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant ml-1">Callsign</label>
@@ -95,6 +117,8 @@ export default function Auth() {
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                   <input
                     type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Full Name"
                     className="w-full bg-surface-container border border-outline-variant rounded-xl py-4 pl-12 pr-5 text-on-background focus:ring-2 focus:ring-primary outline-none transition-all"
                   />
@@ -107,6 +131,8 @@ export default function Auth() {
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email Address"
                   className="w-full bg-surface-container border border-outline-variant rounded-xl py-4 pl-12 pr-5 text-on-background focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
@@ -118,13 +144,15 @@ export default function Auth() {
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-surface-container border border-outline-variant rounded-xl py-4 pl-12 pr-5 text-on-background focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
             </div>
 
-            <button className="w-full py-5 rounded-2xl bg-primary text-background font-black text-lg flex items-center justify-center gap-3 hover:brightness-110 transition-all active:scale-[0.98] shadow-lg shadow-primary/20 mt-4">
+            <button disabled={loading} className="w-full py-5 rounded-2xl bg-primary text-background font-black text-lg flex items-center justify-center gap-3 hover:brightness-110 transition-all active:scale-[0.98] shadow-lg shadow-primary/20 mt-4 disabled:opacity-50">
               {isLogin ? "INITIATE LOGIN" : "COMPLETE REGISTRATION"}
               <ArrowRight className="w-5 h-5" />
             </button>

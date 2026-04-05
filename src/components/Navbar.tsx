@@ -5,7 +5,7 @@ import { useAuth } from "../lib/AuthProvider";
 
 export default function Navbar() {
   const location = useLocation();
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -36,7 +36,9 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {!user ? (
+        {loading ? (
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        ) : !user ? (
           <>
             <Link to="/auth" className="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">
               Login
