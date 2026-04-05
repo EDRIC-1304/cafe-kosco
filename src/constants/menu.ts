@@ -29,7 +29,7 @@ export const menuItems: MenuItem[] = [
   { id: 's2', name: 'Grilled Chicken Sandwich', description: 'Seared chicken for extra propulsion.', price: 140, category: 'Snacks', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=1000&auto=format&fit=crop', status: 'Fueling...', rating: 4.8 },
   { id: 's3', name: 'Chicken Wrap', description: 'Portable protein for explorers.', price: 160, category: 'Snacks', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=1000&auto=format&fit=crop', status: 'Fueling...', rating: 4.7 },
   { id: 's4', name: 'French Fries', description: 'Golden potato rods.', price: 100, category: 'Snacks', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=1000&auto=format&fit=crop', status: 'Light Mass', rating: 4.5 },
-  { id: 's5', name: 'Garlic Bread', description: 'Infused with aromatic herbs.', price: 110, category: 'Snacks', image: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?q=80&w=1000&auto=format&fit=crop', status: 'Light Mass', rating: 4.6 },
+  { id: 's5', name: 'Garlic Bread', description: 'Infused with aromatic herbs.', price: 110, category: 'Snacks', image: 'https://images.unsplash.com/photo-1627308595229-7830f5c9100f?q=80&w=1000&auto=format&fit=crop', status: 'Light Mass', rating: 4.6 },
   { id: 's6', name: 'Chicken Burger', description: 'Hearty galactic patty.', price: 150, category: 'Snacks', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop', status: 'Fueling...', rating: 4.8 },
 
   // Desserts

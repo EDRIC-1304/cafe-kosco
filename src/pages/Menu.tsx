@@ -1,16 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { menuItems } from "@/src/constants/menu";
 import { Search, Filter, ShoppingCart, Star } from "lucide-react";
+import { db } from "../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { MenuItem } from "../types";
 import { cn } from "@/src/lib/utils";
 
 export default function Menu() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, "systemSettings", "products"));
+        if (docSnap.exists() && docSnap.data().items) {
+          setItems(docSnap.data().items);
+        } else {
+          const { menuItems } = await import("@/src/constants/menu");
+          setItems(menuItems);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMenu();
+  }, []);
 
   const categories = ["All", "Coffee", "Beverages", "Snacks", "Desserts"];
 
-  const filteredItems = menuItems.filter(item => {
+  const filteredItems = items.filter(item => {
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -61,9 +84,13 @@ export default function Menu() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <AnimatePresence mode="popLayout">
+        {loading ? (
+          <div className="py-24 flex justify-center">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <AnimatePresence mode="popLayout">
             {filteredItems.map((item) => (
               <motion.div
                 key={item.id}
@@ -106,8 +133,9 @@ export default function Menu() {
             ))}
           </AnimatePresence>
         </div>
+        )}
 
-        {filteredItems.length === 0 && (
+        {!loading && filteredItems.length === 0 && (
           <div className="py-20 text-center">
             <p className="text-on-surface-variant text-lg">No items found matching your search coordinates.</p>
           </div>

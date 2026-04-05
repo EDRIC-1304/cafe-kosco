@@ -45,10 +45,17 @@ async function startServer() {
     
     let dynamicMenu = "";
     try {
-      const docSnap = await getDoc(doc(db, "systemSettings", "menuConfig"));
-      if (docSnap.exists()) {
-        const { menu = {}, specials = {} } = docSnap.data();
-        dynamicMenu = `Menu & Pricing (₹):\n- Dynamic Coffee: Espresso (${menu.espresso || 100}), Americano (${menu.americano || 110}).\n- Snacks: Chicken Burger (${menu.chicken_burger || 150}).\n- Special Menu: Caramel Frappe (${specials.caramel_frappe || 170}), Chicken Tandoori Pizza (${specials.chicken_tandoori_pizza || 240}).`;
+      const docSnap = await getDoc(doc(db, "systemSettings", "products"));
+      if (docSnap.exists() && docSnap.data().items) {
+        const items = docSnap.data().items;
+        dynamicMenu = "Menu & Pricing (₹):\n";
+        
+        const categories = [...new Set(items.map((i: any) => i.category))];
+        categories.forEach((cat) => {
+          const catItems = items.filter((i: any) => i.category === cat);
+          const mapped = catItems.map((i: any) => `${i.name} (${i.price})`).join(", ");
+          dynamicMenu += `- ${cat}: ${mapped}.\n`;
+        });
       }
     } catch (err) {
       console.error("Firestore menu fetch err:", err);
