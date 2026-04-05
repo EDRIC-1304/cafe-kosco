@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Traveler profile for Café Kosco.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier for the traveler." },
+        "email": { "type": "string", "format": "email", "description": "Traveler's communication frequency." },
+        "displayName": { "type": "string", "description": "Traveler's callsign." },
+        "loyaltyTier": { "type": "string", "enum": ["Nebula", "Supernova", "Galactic"], "description": "Traveler's status tier." },
+        "totalBrews": { "type": "integer", "description": "Total fuel units consumed." },
+        "favoriteRoast": { "type": "string", "description": "Primary energy source." }
+      },
+      "required": ["uid", "email", "loyaltyTier"]
+    },
+    "Order": {
+      "title": "Mission Order",
+      "description": "Fuel transmission record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Brewing", "Delivered", "Cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "items", "total", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Individual traveler profiles."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Global mission fuel records."
+    }
+  }
+}

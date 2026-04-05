@@ -1,7 +1,0 @@
-{
-  "name": "Café Kosco",
-  "description": "Precision brewing meets astronomical flavors. A developer's sanctuary for high-fidelity coffee science.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
