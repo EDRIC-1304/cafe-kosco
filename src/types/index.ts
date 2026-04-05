@@ -17,4 +17,5 @@ export interface UserProfile {
   loyaltyTier: string;
   totalBrews: number;
   favoriteRoast: string;
+  role?: 'admin' | 'customer';
 }

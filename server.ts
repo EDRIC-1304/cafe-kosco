@@ -4,11 +4,24 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const firebaseConfig = {
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VITE_FIREBASE_APP_ID
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
 
 const genAI = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY || "" });
 
@@ -29,6 +42,17 @@ async function startServer() {
     if (!process.env.VITE_GEMINI_API_KEY) {
       return res.status(500).json({ error: "VITE_GEMINI_API_KEY is not configured." });
     }
+    
+    let dynamicMenu = "";
+    try {
+      const docSnap = await getDoc(doc(db, "systemSettings", "menuConfig"));
+      if (docSnap.exists()) {
+        const { menu = {}, specials = {} } = docSnap.data();
+        dynamicMenu = `Menu & Pricing (₹):\n- Dynamic Coffee: Espresso (${menu.espresso || 100}), Americano (${menu.americano || 110}).\n- Snacks: Chicken Burger (${menu.chicken_burger || 150}).\n- Special Menu: Caramel Frappe (${specials.caramel_frappe || 170}), Chicken Tandoori Pizza (${specials.chicken_tandoori_pizza || 240}).`;
+      }
+    } catch (err) {
+      console.error("Firestore menu fetch err:", err);
+    }
 
     try {
       const model = "gemini-3-flash-preview";
@@ -42,12 +66,12 @@ async function startServer() {
           Operational Base: Aldona, Bardez, Goa (Near Aldona Church).
           Timings: 06:00 AM to 07:00 PM daily (Open all days including holidays).
           
-          Menu & Pricing (₹):
+          ${dynamicMenu ? dynamicMenu : `Menu & Pricing (₹):
           - Coffee: Espresso (100), Cappuccino (120), Latte (140), Americano (110), Mocha (160), Cold Coffee (150).
           - Beverages: Iced Tea (90), Lemon Soda (70), Hot Chocolate (130), Fresh Lime Juice (80).
           - Snacks: Chicken Sandwich (110), Grilled Chicken Sandwich (140), Chicken Wrap (160), French Fries (100), Garlic Bread (110), Chicken Burger (150).
           - Desserts: Brownie (120), Cheesecake (180), Chocolate Muffin (90), Ice Cream Sundae (150).
-          - Special Menu: Caramel Frappe (170), Peri Peri Fries (120), Chicken Tandoori Pizza (240).
+          - Special Menu: Caramel Frappe (170), Peri Peri Fries (120), Chicken Tandoori Pizza (240).`}
           
           Site Coordinates (Routes):
           - Home: /
